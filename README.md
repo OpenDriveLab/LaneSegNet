@@ -10,9 +10,8 @@
 
 </div>
 
-> :mailbox_with_mail: Primary contact: [Tianyu Li](https://scholar.google.com/citations?user=X6vTmEMAAAAJ) ( litianyu@opendrivelab.com )
-
-This is the official repository of [**LaneSegNet**: Map Learning with Lane Segment Perception for Autonomous Driving](https://arxiv.org/abs/2312.xxxxx).
+> - :mailbox_with_mail: Primary contact: [Tianyu Li](https://scholar.google.com/citations?user=X6vTmEMAAAAJ) ( litianyu@opendrivelab.com )
+> - [arXiv](https://arxiv.org/abs/2312.xxxxx) | [Blog TODO]() | [Slides TODO]()
 
 ## Highlights
 
@@ -153,3 +152,5 @@ We acknowledge all the open-source contributors for the following projects to ma
 - [Openlane-V2](https://github.com/OpenDriveLab/OpenLane-V2)
 - [BEVFormer](https://github.com/fundamentalvision/BEVFormer)
 - [TopoNet](https://github.com/OpenDriveLab/TopoNet)
+- [PersFormer]()
+- [OpenLane]()
