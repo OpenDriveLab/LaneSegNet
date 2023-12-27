@@ -2,7 +2,7 @@
 
 # LaneSegNet: Map Learning with Lane Segment Perception for Autonomous Driving
 
-[![arXiv](https://img.shields.io/badge/arXiv-2312.xxxxx-479ee2.svg)](https://arxiv.org/abs/2312.xxxxx)
+[![arXiv](https://img.shields.io/badge/arXiv-2312.16108-479ee2.svg)](https://arxiv.org/abs/2312.16108)
 [![OpenLane-V2](https://img.shields.io/badge/GitHub-OpenLane--V2-blueviolet.svg)](https://github.com/OpenDriveLab/OpenLane-V2)
 [![LICENSE](https://img.shields.io/badge/license-Apache_2.0-blue.svg)](./LICENSE)
 
@@ -11,7 +11,7 @@
 </div>
 
 > - :mailbox_with_mail: Primary contact: [Tianyu Li](https://scholar.google.com/citations?user=X6vTmEMAAAAJ) ( litianyu@opendrivelab.com )
-> - [arXiv](https://arxiv.org/abs/2312.xxxxx) | [Blog TODO]() | [Slides TODO]()
+> - [arXiv](https://arxiv.org/abs/2312.16108) | [Blog TODO]() | [Slides TODO]()
 
 ## Highlights
 
@@ -20,7 +20,7 @@
 :checkered_flag: **Lane Segment** and **`OpenLane-V2 Map Element Bucket`** will serve as a main track in the **`CVPR 2024 Autonomous Driving Challenge`**. For further details, please [stay tuned](https://opendrivelab.com/AD24Challenge.html)!
 
 ## News
-- **`[2023/12]`** LaneSegNet [paper](https://arxiv.org/abs/2312.xxxxx) is available on arXiv. Code is also released!
+- **`[2023/12]`** LaneSegNet [paper](https://arxiv.org/abs/2312.16108) is available on arXiv. Code is also released!
 
 ---
 
@@ -133,7 +133,7 @@ If this work is helpful for your research, please consider citing the following 
 @article{li2023lanesegnet,
   title={LaneSegNet: Map Learning with Lane Segment Perception for Autonomous Driving},
   author={Li, Tianyu and Jia, Peijin and Wang, Bangjun and Chen, Li and Jiang, Kun and Yan, Junchi and Li, Hongyang},
-  journal={arXiv preprint arXiv:2312.xxxxx},
+  journal={arXiv preprint arXiv:2312.16108},
   year={2023}
 }
 
