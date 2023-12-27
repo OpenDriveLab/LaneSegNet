@@ -152,5 +152,5 @@ We acknowledge all the open-source contributors for the following projects to ma
 - [Openlane-V2](https://github.com/OpenDriveLab/OpenLane-V2)
 - [BEVFormer](https://github.com/fundamentalvision/BEVFormer)
 - [TopoNet](https://github.com/OpenDriveLab/TopoNet)
-- [PersFormer]()
-- [OpenLane]()
+- [PersFormer](https://github.com/OpenDriveLab/PersFormer_3DLane)
+- [OpenLane](https://github.com/OpenDriveLab/OpenLane)
