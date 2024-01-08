@@ -82,6 +82,8 @@ pip install -r requirements.txt
 
 Following [OpenLane-V2 repo](https://github.com/OpenDriveLab/OpenLane-V2/blob/v2.1.0/data) to download the **Image** and the **Map Element Bucket** data. Run following script to collect data for this repo.
 
+:bell: The `Map Element Bucket` has been updated as of October 2023. Please ensure you download the most recent data!
+
 ```bash
 cd LaneSegNet
 mkdir data
@@ -99,8 +101,8 @@ data/OpenLane-V2
 |   └── ...
 ├── test
 |   └── ...
-├── data_dict_subset_A_train_lanesegment.pkl
-├── data_dict_subset_A_val_lanesegment.pkl
+├── data_dict_subset_A_train_lanesegnet.pkl
+├── data_dict_subset_A_val_lanesegnet.pkl
 ├── ...
 ```
 
