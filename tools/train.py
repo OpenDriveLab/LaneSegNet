@@ -146,7 +146,7 @@ def main():
         cfg.auto_resume = args.auto_resume
         warnings.warn('`--auto-resume` is only supported when mmdet'
                       'version >= 2.20.0 for 3D detection model or'
-                      'mmsegmentation verision >= 0.21.0 for 3D'
+                      'mmsegmentation version >= 0.21.0 for 3D'
                       'segmentation model')
 
     if args.gpus is not None:
