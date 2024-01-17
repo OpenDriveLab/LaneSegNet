@@ -132,11 +132,11 @@ All assets and code are under the [Apache 2.0 license](./LICENSE) unless specifi
 If this work is helpful for your research, please consider citing the following BibTeX entry.
 
 ``` bibtex
-@article{li2023lanesegnet,
+@inproceedings{li2023lanesegnet,
   title={LaneSegNet: Map Learning with Lane Segment Perception for Autonomous Driving},
   author={Li, Tianyu and Jia, Peijin and Wang, Bangjun and Chen, Li and Jiang, Kun and Yan, Junchi and Li, Hongyang},
-  journal={arXiv preprint arXiv:2312.16108},
-  year={2023}
+  booktitle={ICLR},
+  year={2024}
 }
 
 @inproceedings{wang2023openlanev2,
