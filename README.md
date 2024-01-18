@@ -11,13 +11,14 @@
 </div>
 
 > - :mailbox_with_mail: Primary contact: [Tianyu Li](https://scholar.google.com/citations?user=X6vTmEMAAAAJ) ( litianyu@opendrivelab.com )
-> - [arXiv](https://arxiv.org/abs/2312.16108) | [Blog TODO]() | [Slides TODO]()
+> - [arXiv paper](https://arxiv.org/abs/2312.16108) | [OpenReview](https://openreview.net/forum?id=LsURkIPYR5), ICLR 2024
+> - [Blog TODO]() | [Slides TODO]()
 
 ## Highlights
 
 :fire: We advocate **Lane Segment** as a map learning paradigm that seamlessly incorporates both map :motorway: geometry and :spider_web: topology information.
 
-:checkered_flag: **Lane Segment** and **`OpenLane-V2 Map Element Bucket`** will serve as a main track in the **`CVPR 2024 Autonomous Driving Challenge`**. For further details, please [stay tuned](https://opendrivelab.com/AD24Challenge.html)!
+:checkered_flag: **Lane Segment** and **`OpenLane-V2 Map Element Bucket`** will serve as a track in the **`CVPR 2024 Autonomous Driving Challenge`**. For further details, please [stay tuned](https://opendrivelab.com/AD24Challenge.html)!
 
 ## News
 - **`[2023/12]`** LaneSegNet [paper](https://arxiv.org/abs/2312.16108) is available on arXiv. Code is also released!
@@ -42,7 +43,7 @@
 
 |   Model    | Epoch |  mAP  | TOP<sub>lsls</sub> | Memory | Config | Download |
 | :--------: | :---: | :---: | :----------------: | :----: | :----: | :------: |
-| LaneSegNet | 24 | 33.5 | 25.4 | 9.4G | [config](projects/configs/lanesegnet_r50_8x1_24e_olv2_subset_A.py) | [model](https://huggingface.co/OpenDrive/lanesegnet_r50_8x1_24e_olv2_subset_A/resolve/main/lanesegnet_r50_8x1_24e_olv2_subset_A.pth)/[log](https://huggingface.co/OpenDrive/lanesegnet_r50_8x1_24e_olv2_subset_A/resolve/main/20231225_213951.log) |
+| LaneSegNet | 24 | 33.5 | 25.4 | 9.4G | [config](projects/configs/lanesegnet_r50_8x1_24e_olv2_subset_A.py) | [ckpt](https://huggingface.co/OpenDrive/lanesegnet_r50_8x1_24e_olv2_subset_A/resolve/main/lanesegnet_r50_8x1_24e_olv2_subset_A.pth) / [log](https://huggingface.co/OpenDrive/lanesegnet_r50_8x1_24e_olv2_subset_A/resolve/main/20231225_213951.log) |
 
 
 ## Prerequisites
@@ -80,7 +81,7 @@ pip install -r requirements.txt
 
 ## Prepare Dataset
 
-Following [OpenLane-V2 repo](https://github.com/OpenDriveLab/OpenLane-V2/blob/v2.1.0/data) to download the **Image** and the **Map Element Bucket** data. Run following script to collect data for this repo.
+Following [OpenLane-V2 repo](https://github.com/OpenDriveLab/OpenLane-V2/blob/v2.1.0/data) to download the **Image** and the **Map Element Bucket** data. Run the following script to collect data for this repo.
 
 :bell: The `Map Element Bucket` has been updated as of October 2023. Please ensure you download the most recent data!
 
