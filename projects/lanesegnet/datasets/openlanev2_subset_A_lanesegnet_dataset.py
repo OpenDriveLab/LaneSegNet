@@ -22,7 +22,7 @@ from mmdet3d.datasets import Custom3DDataset
 
 from .openlanev2_evaluate_custom import lanesegnet_evaluate
 from ..core.lane.util import fix_pts_interpolate
-
+from ..core.visualizer.lane_segment import draw_annotation_bev
 
 @DATASETS.register_module()
 class OpenLaneV2_subset_A_LaneSegNet_Dataset(Custom3DDataset):
@@ -449,4 +449,96 @@ class OpenLaneV2_subset_A_LaneSegNet_Dataset(Custom3DDataset):
             score_thr (float): The threshold of score.
             show_num (int): The number of images to be shown.
         """
-        raise NotImplementedError
+        for idx, result in enumerate(results):
+            if idx % 5 != 0:
+                continue
+            if idx // 5 > show_num:
+                break
+
+            info = self.data_infos[idx]
+
+            pred_result = self.format_results([result])
+            pred_result = list(pred_result['results'].values())[0]['predictions']
+            pred_result = self._filter_by_confidence(pred_result, score_thr)
+
+            pv_imgs = []
+            for cam_name, cam_info in info['sensor'].items():
+                image_path = os.path.join(self.data_root, cam_info['image_path'])
+                image_pv = mmcv.imread(image_path)
+                pv_imgs.append(image_pv)
+
+            surround_img = self._render_surround_img(pv_imgs)
+            output_path = os.path.join(out_dir, f'{info["segment_id"]}/{info["timestamp"]}/surround.jpg')
+            mmcv.imwrite(surround_img, output_path)
+
+            conn_img_gt = draw_annotation_bev(info['annotation'])
+            conn_img_pred = draw_annotation_bev(pred_result)
+            divider = np.ones((conn_img_gt.shape[0], 7, 3), dtype=np.uint8) * 128
+            conn_img = np.concatenate([conn_img_gt, divider, conn_img_pred], axis=1)[..., ::-1]
+
+            output_path = os.path.join(out_dir, f'{info["segment_id"]}/{info["timestamp"]}/bev.jpg')
+            mmcv.imwrite(conn_img, output_path)
+
+
+    @staticmethod
+    def _render_surround_img(images):
+        all_image = []
+        img_height = images[1].shape[0]
+
+        for idx in [1, 0, 2, 5, 3, 4, 6]:
+            if idx  == 0:
+                all_image.append(images[idx][356:1906, :])
+                all_image.append(np.full((img_height, 20, 3), (255, 255, 255), dtype=np.uint8))
+            elif idx == 6 or idx == 2:
+                all_image.append(images[idx])
+            else:
+                all_image.append(images[idx])
+                all_image.append(np.full((img_height, 20, 3), (255, 255, 255), dtype=np.uint8))
+
+        surround_img_upper = None
+        surround_img_upper = np.concatenate(all_image[:5], 1)
+
+        surround_img_down = None
+        surround_img_down = np.concatenate(all_image[5:], 1)
+        scale = surround_img_upper.shape[1] / surround_img_down.shape[1]
+        surround_img_down = cv2.resize(surround_img_down, None, fx=scale, fy=scale)
+
+        divider = np.full((25, surround_img_down.shape[1], 3), (255, 255, 255), dtype=np.uint8)
+
+        surround_img = np.concatenate((surround_img_upper, divider, surround_img_down), 0)
+        surround_img = cv2.resize(surround_img, None, fx=0.5, fy=0.5)
+
+        return surround_img
+
+    @staticmethod
+    def _filter_by_confidence(annotations, threshold=0.3):
+        annotations = annotations.copy()
+        areas = annotations['area']
+        ls_mask = []
+        lane_segments = []
+        for ls in annotations['lane_segment']:
+            if ls['confidence'] > threshold:
+                ls_mask.append(True)
+                lane_segments.append(ls)
+            else:
+                ls_mask.append(False)
+        ls_mask = np.array(ls_mask, dtype=bool)
+        areas = [area for area in annotations['area'] if area['confidence'] > threshold]
+
+        traffic_elements = annotations['traffic_element']
+        te_mask = []
+        tes = []
+        for te in traffic_elements:
+            if te['confidence'] > threshold:
+                te_mask.append(True)
+                tes.append(te)
+            else:
+                te_mask.append(False)
+        te_mask = np.array(te_mask, dtype=bool)
+
+        annotations['lane_segment'] = lane_segments
+        annotations['area'] = areas
+        annotations['traffic_element'] = tes
+        annotations['topology_lsls'] = annotations['topology_lsls'][ls_mask][:, ls_mask] > 0.5
+        annotations['topology_lste'] = annotations['topology_lste'][ls_mask][:, te_mask] > 0.5
+        return annotations
