@@ -117,6 +117,52 @@ def parse_args():
     return args
 
 
+def auto_scale_lr(cfg, distributed, logger):
+    """Automatically scaling LR according to GPU number and sample per GPU.
+
+    Args:
+        cfg (config): Training config.
+        distributed (bool): Using distributed or not.
+        logger (logging.Logger): Logger.
+    """
+    # Get flag from config
+    if ('auto_scale_lr' not in cfg) or \
+            (not cfg.auto_scale_lr.get('enable', False)):
+        logger.info('Automatic scaling of learning rate (LR)'
+                    ' has been disabled.')
+        return
+
+    # Get base batch size from config
+    base_batch_size = cfg.auto_scale_lr.get('base_batch_size', None)
+    if base_batch_size is None:
+        return
+
+    # Get gpu number
+    if distributed:
+        _, world_size = get_dist_info()
+        num_gpus = len(range(world_size))
+    else:
+        num_gpus = len(cfg.gpu_ids)
+
+    # calculate the batch size
+    samples_per_gpu = cfg.data.samples_per_gpu
+    batch_size = num_gpus * samples_per_gpu
+    logger.info(f'Training with {num_gpus} GPU(s) with {samples_per_gpu} '
+                f'samples per GPU. The total batch size is {batch_size}.')
+
+    if batch_size != base_batch_size:
+        # scale LR with
+        # [linear scaling rule](https://arxiv.org/abs/1706.02677)
+        scaled_lr = (batch_size / base_batch_size) * cfg.optimizer.lr
+        logger.info('LR has been automatically scaled '
+                    f'from {cfg.optimizer.lr} to {scaled_lr}')
+        cfg.optimizer.lr = scaled_lr
+    else:
+        logger.info('The batch size match the '
+                    f'base batch size: {base_batch_size}, '
+                    f'will not scaling the LR ({cfg.optimizer.lr}).')
+
+
 def main():
     args = parse_args()
 
@@ -164,8 +210,13 @@ def main():
         cfg.gpu_ids = [args.gpu_id]
 
     if args.autoscale_lr:
-        # apply the linear scaling rule (https://arxiv.org/abs/1706.02677)
-        cfg.optimizer['lr'] = cfg.optimizer['lr'] * len(cfg.gpu_ids) / 8
+        if 'auto_scale_lr' in cfg and \
+                'base_batch_size' in cfg.auto_scale_lr:
+            cfg.auto_scale_lr.enable = True
+        else:
+            warnings.warn('Can not find "auto_scale_lr" or '
+                          '"auto_scale_lr.base_batch_size" in your'
+                          ' configuration file.')
 
     # init distributed env first, since logger depends on the dist info.
     if args.launcher == 'none':
@@ -248,6 +299,7 @@ def main():
             if hasattr(datasets[0], 'PALETTE') else None)
     # add an attribute for visualization convenience
     model.CLASSES = datasets[0].CLASSES
+    auto_scale_lr(cfg, distributed=distributed, logger=logger)
     train_model(
         model,
         datasets,
