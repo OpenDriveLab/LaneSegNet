@@ -12,7 +12,7 @@
 
 > - :mailbox_with_mail: Primary contact: [Tianyu Li](https://scholar.google.com/citations?user=X6vTmEMAAAAJ) ( litianyu@opendrivelab.com )
 > - [arXiv paper](https://arxiv.org/abs/2312.16108) | [OpenReview](https://openreview.net/forum?id=LsURkIPYR5), ICLR 2024
-> - [Blog TODO]() | [Slides TODO]()
+> - [Blog (Zhihu)](https://zhuanlan.zhihu.com/p/678596087) | [Slides TODO]()
 
 ## Highlights
 
