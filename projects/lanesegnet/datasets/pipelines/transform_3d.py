@@ -457,8 +457,8 @@ class CropFrontViewImageForAv2(object):
             mask = results['gt_bboxes'][:, 3] > 0
             results['gt_bboxes'] = results['gt_bboxes'][mask]
             results['gt_labels'] = results['gt_labels'][mask]
-            if 'gt_lane_lcte_adj' in results.keys():
-                results['gt_lane_lcte_adj'] = results['gt_lane_lcte_adj'][:, mask]
+            if 'gt_lane_lste_adj' in results.keys():
+                results['gt_lane_lste_adj'] = results['gt_lane_lste_adj'][:, mask]
 
     def __call__(self, results):
         """Call function to pad images, masks, semantic segmentation maps.

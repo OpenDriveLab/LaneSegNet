@@ -53,7 +53,7 @@ class LoadAnnotations3DLaneSegment(LoadAnnotations3D):
                  with_lane_3d=True,
                  with_lane_label_3d=True,
                  with_lane_adj=True,
-                 with_lane_lcte_adj=False,
+                 with_lane_lste_adj=False,
                  with_lane_type=False,
                  with_bbox_3d=False,
                  with_label_3d=False,
@@ -63,7 +63,7 @@ class LoadAnnotations3DLaneSegment(LoadAnnotations3D):
         self.with_lane_label_3d = with_lane_label_3d
         self.with_lane_type = with_lane_type
         self.with_lane_adj = with_lane_adj
-        self.with_lane_lcte_adj = with_lane_lcte_adj
+        self.with_lane_lste_adj = with_lane_lste_adj
 
     def _load_lanes_3d(self, results):
         results['gt_lanes_3d'] = results['ann_info']['gt_lanes_3d']
@@ -71,8 +71,8 @@ class LoadAnnotations3DLaneSegment(LoadAnnotations3D):
             results['gt_lane_labels_3d'] = results['ann_info']['gt_lane_labels_3d']
         if self.with_lane_adj:
             results['gt_lane_adj'] = results['ann_info']['gt_lane_adj']
-        if self.with_lane_lcte_adj:
-            results['gt_lane_lcte_adj'] = results['ann_info']['gt_lane_lcte_adj']
+        if self.with_lane_lste_adj:
+            results['gt_lane_lste_adj'] = results['ann_info']['gt_lane_lste_adj']
         if self.with_lane_type:
             results['gt_lane_left_type'] = results['ann_info']['gt_lane_left_type']
             results['gt_lane_right_type'] = results['ann_info']['gt_lane_right_type']
@@ -91,6 +91,6 @@ class LoadAnnotations3DLaneSegment(LoadAnnotations3D):
         repr_str += f'{indent_str}with_lane_3d={self.with_lane_3d}, '
         repr_str += f'{indent_str}with_lane_lable_3d={self.with_lane_label_3d}, '
         repr_str += f'{indent_str}with_lane_adj={self.with_lane_adj}, '
-        repr_str += f'{indent_str}with_lane_lcte_adj={self.with_lane_lcte_adj}, '
+        repr_str += f'{indent_str}with_lane_lste_adj={self.with_lane_lste_adj}, '
         repr_str += f'{indent_str}with_lane_type={self.with_lane_type}, '
         return repr_str

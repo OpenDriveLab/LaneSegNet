@@ -28,7 +28,7 @@ from ..core.visualizer.lane_segment import draw_annotation_bev
 class OpenLaneV2_subset_A_LaneSegNet_Dataset(Custom3DDataset):
     CAMS = ('ring_front_center', 'ring_front_left', 'ring_front_right',
             'ring_rear_left', 'ring_rear_right', 'ring_side_left', 'ring_side_right')
-    LANE_CLASSES = ('lane_segment', 'ped_crossing', 'road_boundary')
+    LANE_CLASSES = ('lane_segment', 'ped_crossing')
     TE_CLASSES = ('traffic_light', 'road_sign')
     TE_ATTR_CLASSES = ('unknown', 'red', 'green', 'yellow',
                        'go_straight', 'turn_left', 'turn_right',
@@ -220,7 +220,7 @@ class OpenLaneV2_subset_A_LaneSegNet_Dataset(Custom3DDataset):
             gt_lane_adj = topology_lsls,
             bboxes = te_bboxes,
             labels = te_labels,
-            gt_lane_lcte_adj = topology_lste,
+            gt_lane_lste_adj = topology_lste,
             gt_lane_left_type = gt_lane_left_type,
             gt_lane_right_type = gt_lane_right_type,
         )
@@ -394,17 +394,17 @@ class OpenLaneV2_subset_A_LaneSegNet_Dataset(Custom3DDataset):
                     )
                     pred_info['traffic_element'].append(te_info)
 
-            if result['lclc_results'] is not None:
-                topology_lsls_ped = result['lclc_results'].astype(np.float32)[valid_indices][:, valid_indices]
-                topology_lsls_ped = np.delete(topology_lsls_ped, pred_area_index, axis=0)
-                topology_lsls = np.delete(topology_lsls_ped, pred_area_index, axis=1)
+            if result['lsls_results'] is not None:
+                topology_lsls_area = result['lsls_results'].astype(np.float32)[valid_indices][:, valid_indices]
+                topology_lsls_area = np.delete(topology_lsls_area, pred_area_index, axis=0)
+                topology_lsls = np.delete(topology_lsls_area, pred_area_index, axis=1)
                 pred_info['topology_lsls'] = topology_lsls
             else:
                 pred_info['topology_lsls'] = np.zeros((len(pred_info['lane_segment']), len(pred_info['lane_segment'])), dtype=np.float32)
 
-            if result['lcte_results'] is not None:
-                topology_lste_ped = result['lcte_results'].astype(np.float32)[valid_indices]
-                topology_lste = np.delete(topology_lste_ped, pred_area_index, axis=0)
+            if result['lste_results'] is not None:
+                topology_lste_area = result['lste_results'].astype(np.float32)[valid_indices]
+                topology_lste = np.delete(topology_lste_area, pred_area_index, axis=0)
                 pred_info['topology_lste'] = topology_lste
             else:
                 pred_info['topology_lste'] = np.zeros((len(pred_info['lane_segment']), len(pred_info['traffic_element'])), dtype=np.float32)

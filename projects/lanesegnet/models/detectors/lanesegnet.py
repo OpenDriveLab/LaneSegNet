@@ -137,7 +137,6 @@ class LaneSegNet(MVXTwoStageDetector):
                       gt_lane_right_type=None,
                       gt_labels=None,
                       gt_bboxes=None,
-                      gt_lane_lcte_adj=None,
                       gt_instance_masks=None,
                       gt_bboxes_ignore=None,
                       ):
@@ -168,38 +167,6 @@ class LaneSegNet(MVXTwoStageDetector):
             lclc_losses = self.lclc_head.forward_train(lane_feats, lane_assign_result, lane_feats, lane_assign_result, gt_lane_adj)
             for loss in lclc_losses:
                 losses['lclc_head.' + loss] = lclc_losses[loss]
-
-        if self.bbox_head is not None:
-            front_view_img_feats = [lvl[:, 0] for lvl in img_feats]
-            batch_input_shape = tuple(img[0, 0].size()[-2:])
-            bbox_img_metas = []
-            for img_meta in img_metas:
-                bbox_img_metas.append(
-                    dict(
-                        batch_input_shape=batch_input_shape,
-                        img_shape=img_meta['img_shape'][0],
-                        scale_factor=img_meta['scale_factor'][0],
-                        crop_shape=img_meta['crop_shape'][0]))
-                img_meta['batch_input_shape'] = batch_input_shape
-
-            te_losses = {}
-            bbox_outs = self.bbox_head(front_view_img_feats, bbox_img_metas)
-            bbox_losses, te_assign_result = self.bbox_head.loss(bbox_outs, gt_bboxes, gt_labels, bbox_img_metas, gt_bboxes_ignore)
-            for loss in bbox_losses:
-                te_losses['bbox_head.' + loss] = bbox_losses[loss]
-
-            if self.lcte_head is not None:
-                te_feats = bbox_outs['history_states']
-                lcte_losses = self.lcte_head.forward_train(lane_feats, lane_assign_result, te_feats, te_assign_result, gt_lane_lcte_adj)
-                for loss in lcte_losses:
-                    te_losses['lcte_head.' + loss] = lcte_losses[loss]
-        
-            num_gt_bboxes = sum([len(gt) for gt in gt_labels])
-            if num_gt_bboxes == 0:
-                for loss in te_losses:
-                    te_losses[loss] *= 0
-
-            losses.update(te_losses)
 
         return losses
 
@@ -250,47 +217,24 @@ class LaneSegNet(MVXTwoStageDetector):
 
         if self.lclc_head is not None:
             lane_feats = outs['history_states']
-            lclc_results = self.lclc_head.get_relationship(lane_feats, lane_feats)
-            lclc_results = [result.detach().cpu().numpy() for result in lclc_results]
+            lsls_results = self.lclc_head.get_relationship(lane_feats, lane_feats)
+            lsls_results = [result.detach().cpu().numpy() for result in lsls_results]
         else:
-            lclc_results = [None for _ in range(batchsize)]
+            lsls_results = [None for _ in range(batchsize)]
 
-        if self.bbox_head is not None:
-            front_view_img_feats = [lvl[:, 0] for lvl in x]
-            batch_input_shape = tuple(img[0, 0].size()[-2:])
-            bbox_img_metas = []
-            for img_meta in img_metas:
-                bbox_img_metas.append(
-                    dict(
-                        batch_input_shape=batch_input_shape,
-                        img_shape=img_meta['img_shape'][0],
-                        scale_factor=img_meta['scale_factor'][0],
-                        crop_shape=img_meta['crop_shape'][0]))
-                img_meta['batch_input_shape'] = batch_input_shape
-            bbox_outs = self.bbox_head(front_view_img_feats, bbox_img_metas)
-            bbox_results = self.bbox_head.get_bboxes(bbox_outs, bbox_img_metas, rescale=rescale)
-        else:
-            bbox_results = [None for _ in range(batchsize)]
-        
-        if self.bbox_head is not None and self.lcte_head is not None:
-            te_feats = bbox_outs['history_states']
-            lcte_results = self.lcte_head.get_relationship(lane_feats, te_feats)
-            lcte_results = [result.detach().cpu().numpy() for result in lcte_results]
-        else:
-            lcte_results = [None for _ in range(batchsize)]
-
-        return bev_feats, bbox_results, lane_results, lclc_results, lcte_results
+        return bev_feats, lane_results, lsls_results
 
     def simple_test(self, img_metas, img=None, prev_bev=None, rescale=False):
         """Test function without augmentaiton."""
         img_feats = self.extract_feat(img=img, img_metas=img_metas)
 
         results_list = [dict() for i in range(len(img_metas))]
-        new_prev_bev, bbox_results, lane_results, lclc_results, lcte_results = self.simple_test_pts(
+        new_prev_bev, lane_results, lsls_results = self.simple_test_pts(
             img_feats, img_metas, img, prev_bev, rescale=rescale)
-        for result_dict, bbox, lane, lclc, lcte in zip(results_list, bbox_results, lane_results, lclc_results, lcte_results):
-            result_dict['bbox_results'] = bbox
+        for result_dict, lane, lsls in zip(results_list, lane_results, lsls_results):
             result_dict['lane_results'] = lane
-            result_dict['lclc_results'] = lclc
-            result_dict['lcte_results'] = lcte
+            result_dict['bbox_results'] = None
+            result_dict['lsls_results'] = lsls
+            result_dict['lste_results'] = None
+
         return new_prev_bev, results_list

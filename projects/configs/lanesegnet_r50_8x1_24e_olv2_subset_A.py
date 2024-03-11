@@ -203,7 +203,7 @@ train_pipeline = [
     dict(type='CustomLoadMultiViewImageFromFiles', to_float32=True),
     dict(type='LoadAnnotations3DLaneSegment',
          with_lane_3d=True, with_lane_label_3d=True, with_lane_adj=True, with_lane_type=True,
-         with_bbox=False, with_label=False, with_lane_lcte_adj=False),
+         with_bbox=False, with_label=False, with_lane_lste_adj=False),
     dict(type='PhotoMetricDistortionMultiViewImage'),
     dict(type='CropFrontViewImageForAv2'),
     dict(type='RandomScaleImageMultiViewImage', scales=[0.5]),

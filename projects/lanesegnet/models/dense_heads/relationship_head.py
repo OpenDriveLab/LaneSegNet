@@ -5,21 +5,12 @@
 #---------------------------------------------------------------------------------------#
 
 import numpy as np
-import cv2
 import torch
 import torch.nn as nn
 import torch.nn.functional as F
-import mmcv
-from mmcv.cnn import Linear, bias_init_with_prob, build_activation_layer
-from mmcv.cnn.bricks.transformer import build_feedforward_network
-from mmcv.runner import auto_fp16, force_fp32
+
 from mmcv.utils import TORCH_VERSION, digit_version
-from mmdet.core import build_assigner, build_sampler, multi_apply, reduce_mean
 from mmdet.models.builder import HEADS, build_loss
-from mmdet.models.dense_heads import AnchorFreeHead
-from mmdet.models.utils import build_transformer
-from mmdet.models.utils.transformer import inverse_sigmoid
-from mmdet3d.core.bbox.coders import build_bbox_coder
 from mmcv.runner import BaseModule
 
 class MLP(nn.Module):

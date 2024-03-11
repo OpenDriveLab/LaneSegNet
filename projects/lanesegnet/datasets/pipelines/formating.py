@@ -39,9 +39,9 @@ class CustomFormatBundle3DLane(DefaultFormatBundle3D):
         if 'gt_lane_adj' in results:
             results['gt_lane_adj'] = DC(
                 to_tensor(results['gt_lane_adj']))
-        if 'gt_lane_lcte_adj' in results:
-            results['gt_lane_lcte_adj'] = DC(
-                to_tensor(results['gt_lane_lcte_adj']))
+        if 'gt_lane_lste_adj' in results:
+            results['gt_lane_lste_adj'] = DC(
+                to_tensor(results['gt_lane_lste_adj']))
         if 'gt_lane_left_type' in results:
             results['gt_lane_left_type'] = DC(
                 to_tensor(results['gt_lane_left_type']))  
