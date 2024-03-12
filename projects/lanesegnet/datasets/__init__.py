@@ -1,2 +1,3 @@
 from .pipelines import *
 from .openlanev2_subset_A_lanesegnet_dataset import OpenLaneV2_subset_A_LaneSegNet_Dataset
+from .openlanev2_subset_A_mapele_bucket_dataset import OpenLaneV2_subset_A_MapElementBucket_Dataset

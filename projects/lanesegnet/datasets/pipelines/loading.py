@@ -57,6 +57,7 @@ class LoadAnnotations3DLaneSegment(LoadAnnotations3D):
                  with_lane_type=False,
                  with_bbox_3d=False,
                  with_label_3d=False,
+                 with_area=False,
                  **kwargs):
         super().__init__(with_bbox_3d, with_label_3d, **kwargs)
         self.with_lane_3d = with_lane_3d
@@ -64,6 +65,7 @@ class LoadAnnotations3DLaneSegment(LoadAnnotations3D):
         self.with_lane_type = with_lane_type
         self.with_lane_adj = with_lane_adj
         self.with_lane_lste_adj = with_lane_lste_adj
+        self.with_area = with_area,
 
     def _load_lanes_3d(self, results):
         results['gt_lanes_3d'] = results['ann_info']['gt_lanes_3d']
@@ -76,6 +78,9 @@ class LoadAnnotations3DLaneSegment(LoadAnnotations3D):
         if self.with_lane_type:
             results['gt_lane_left_type'] = results['ann_info']['gt_lane_left_type']
             results['gt_lane_right_type'] = results['ann_info']['gt_lane_right_type']
+        if self.with_area:
+            results['gt_areas_3d'] = results['ann_info']['gt_areas_3d']
+            results['gt_area_labels_3d'] = results['ann_info']['gt_area_labels_3d']
         return results
 
     def __call__(self, results):
@@ -93,4 +98,5 @@ class LoadAnnotations3DLaneSegment(LoadAnnotations3D):
         repr_str += f'{indent_str}with_lane_adj={self.with_lane_adj}, '
         repr_str += f'{indent_str}with_lane_lste_adj={self.with_lane_lste_adj}, '
         repr_str += f'{indent_str}with_lane_type={self.with_lane_type}, '
+        repr_str += f'{indent_str}with_area={self.with_area}, '
         return repr_str

@@ -10,13 +10,15 @@ import matplotlib.pyplot as plt
 COLOR_DICT = {  # RGB [0, 1]
     'centerline': np.array([243, 90, 2]) / 255,
     'laneline': np.array([0, 32, 127]) / 255,
-    'area': np.array([255, 192, 0]) / 255,
+    'ped_crossing': np.array([255, 192, 0]) / 255,
+    'road_boundary': np.array([220, 30, 0]) / 255,
 }
 LINE_PARAM = {
     0: {'color': COLOR_DICT['laneline'], 'alpha': 0.3, 'linestyle': ':'},       # none
     1: {'color': COLOR_DICT['laneline'], 'alpha': 0.75, 'linestyle': 'solid'},  # solid
     2: {'color': COLOR_DICT['laneline'], 'alpha': 0.75, 'linestyle': '--'},     # dashed
-    'area': {'color': COLOR_DICT['area'], 'alpha': 1, 'linestyle': 'solid'},
+    'ped_crossing': {'color': COLOR_DICT['ped_crossing'], 'alpha': 1, 'linestyle': 'solid'},
+    'road_boundary': {'color': COLOR_DICT['road_boundary'], 'alpha': 1, 'linestyle': 'solid'}
 }
 BEV_RANGE = [-50, 50, -25, 25]
 
@@ -45,12 +47,10 @@ def _draw_lane_segment(ax, lane_segment, with_centerline, with_laneline):
         _draw_line(ax, {'points': lane_segment['right_laneline'], 'linetype': lane_segment['right_laneline_type']})
 
 def _draw_area(ax, area):
-    if area['category'] == 0:  # ped crossing with lane segment style.
-        _draw_line(ax, {'points': area['points'][:10], 'linetype': 'area'})
-        _draw_line(ax, {'points': area['points'][10:], 'linetype': 'area'})
-
-    elif area['category'] == 0:  # road boundary
-        _draw_line(ax, {'points': area['points'], 'linetype': 'area'})
+    if area['category'] == 1:  # ped crossing with lane segment style.
+        _draw_line(ax, {'points': area['points'], 'linetype': 'ped_crossing'})
+    elif area['category'] == 2:  # road boundary
+        _draw_line(ax, {'points': area['points'], 'linetype': 'road_boundary'})
 
 def draw_annotation_bev(annotation, with_centerline=True, with_laneline=True, with_area=True):
 

@@ -1,1 +1,2 @@
 from .lanesegnet import LaneSegNet
+from .lanesegnet_mapele_bucket import LaneSegNetMapElementBucket

@@ -23,14 +23,12 @@
 > - Official website: :globe_with_meridians: [AGC2024 Mapless Driving](https://opendrivelab.com/challenge2024/#mapless_driving)
 > - Evaluation server: :hugs: [Hugging Face](https://huggingface.co/spaces/AGC2024/mapless-driving-2024)
 
-This repository can be used as a starting point for Mapless Driving track. However, it is important to note that the training and output format of LaneSegNet should be further adjusted to meet the requirements of the challenge. [Getting Started](https://github.com/OpenDriveLab/LaneSegNet/edit/main/README.md#installation).
-
-
-
+This repository can be used as a starting point for Mapless Driving track. [Getting Started](#installation).
 
 
 
 ## News
+- **`[2024/3]`** We released a multi-head version of LaneSegNet for the OpenLane-V2 Map Element Bucket! [Config](projects/configs/lanesegnet_r50_8x1_24e_olv2_subset_A_mapele_bucket.py).
 - **`[2023/12]`** LaneSegNet [paper](https://arxiv.org/abs/2312.16108) is available on arXiv. Code is also released!
 
 ---
@@ -167,3 +165,4 @@ We acknowledge all the open-source contributors for the following projects to ma
 - [TopoNet](https://github.com/OpenDriveLab/TopoNet)
 - [PersFormer](https://github.com/OpenDriveLab/PersFormer_3DLane)
 - [OpenLane](https://github.com/OpenDriveLab/OpenLane)
+- [MapTR](https://github.com/hustvl/MapTR)

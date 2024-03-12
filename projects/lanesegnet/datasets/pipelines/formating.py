@@ -51,6 +51,12 @@ class CustomFormatBundle3DLane(DefaultFormatBundle3D):
         if 'gt_instance_masks' in results:
             results['gt_instance_masks'] = DC(
                 to_tensor(results['gt_instance_masks']))
+        if 'gt_areas_3d' in results:
+            results['gt_areas_3d'] = DC(
+                to_tensor(results['gt_areas_3d']))
+        if 'gt_area_labels_3d' in results:
+            results['gt_area_labels_3d'] = DC(
+                to_tensor(results['gt_area_labels_3d']))
 
         results = super(CustomFormatBundle3DLane, self).__call__(results)
         return results

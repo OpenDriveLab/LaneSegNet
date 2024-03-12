@@ -108,6 +108,8 @@ class RelationshipHead(BaseModule):
 
         targets = torch.cat(targets, dim=0)
         rel_preds = torch.cat(masked_rel_preds, dim=0)
+        if torch.numel(targets) == 0:
+            return dict(loss_rel=rel_preds.sum() * 0)
 
         loss_rel = self.loss_rel(rel_preds, targets, avg_factor=targets.sum())
 

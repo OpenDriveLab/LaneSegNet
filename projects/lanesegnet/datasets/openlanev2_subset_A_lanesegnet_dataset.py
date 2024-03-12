@@ -367,7 +367,7 @@ class OpenLaneV2_subset_A_LaneSegNet_Dataset(Custom3DDataset):
                         pred_ped = {}
                         pred_ped['id'] = 20000 + pred_idx
                         pred_points = np.concatenate((fix_pts_interpolate(points[self.points_num:self.points_num * 2], 10),
-                                                      fix_pts_interpolate(points[self.points_num * 2:], 10)), axis=0)
+                                                      fix_pts_interpolate(points[self.points_num * 2:][::-1], 10)), axis=0)
                         pred_ped['points'] = pred_points
                         pred_ped['category'] = label
                         pred_ped['confidence'] = score.item()
