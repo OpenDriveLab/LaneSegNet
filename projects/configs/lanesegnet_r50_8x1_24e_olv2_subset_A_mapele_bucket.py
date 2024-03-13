@@ -1,3 +1,13 @@
+"""
+This config is used to train a baseline of OpenLane-V2 Map Element Bucket.
+We conduct a multi-head approach:
+- Deformable DETR for the traffic element detection.
+- LaneSegNet head for the lane segment detection.
+- MapTR head for the area (ped crossing and road boundary) detection.
+
+You can extend the framework by e.g. replacing the heads to stronger version.
+"""
+
 _base_ = []
 custom_imports = dict(imports=['projects.bevformer', 'projects.lanesegnet'])
 
@@ -415,7 +425,7 @@ lr_config = dict(
     warmup_ratio=1.0 / 3,
     min_lr_ratio=1e-3)
 total_epochs = 24
-evaluation = dict(interval=6, pipeline=test_pipeline)
+evaluation = dict(interval=24, pipeline=test_pipeline)
 
 runner = dict(type='EpochBasedRunner', max_epochs=total_epochs)
 log_config = dict(
