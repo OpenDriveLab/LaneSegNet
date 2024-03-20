@@ -65,7 +65,7 @@ class LoadAnnotations3DLaneSegment(LoadAnnotations3D):
         self.with_lane_type = with_lane_type
         self.with_lane_adj = with_lane_adj
         self.with_lane_lste_adj = with_lane_lste_adj
-        self.with_area = with_area,
+        self.with_area = with_area
 
     def _load_lanes_3d(self, results):
         results['gt_lanes_3d'] = results['ann_info']['gt_lanes_3d']
