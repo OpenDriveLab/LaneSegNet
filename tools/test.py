@@ -23,6 +23,13 @@ from mmdet3d.apis import single_gpu_test
 from mmdet3d.datasets import build_dataloader, build_dataset
 from mmdet3d.models import build_model
 
+try:
+    # If mmdet version > 2.20.0, setup_multi_processes would be imported and
+    # used from mmdet instead of mmdet3d.
+    from mmdet.utils import setup_multi_processes
+except ImportError:
+    from mmdet3d.utils import setup_multi_processes
+
 def parse_args():
     parser = argparse.ArgumentParser(
         description='MMDet test (and eval) a model')
@@ -30,7 +37,7 @@ def parse_args():
     parser.add_argument('checkpoint', help='checkpoint file')
     parser.add_argument('--out',
         action='store_true',
-        help='output result file in pickle format')
+        help='output model output file in pickle format')
     parser.add_argument('--input',
         action='store_true'
     )
@@ -115,39 +122,16 @@ def main():
          ', "--format-only" or "--show"')
 
     if args.eval and args.format_only:
-        raise ValueError('--eval and --format_only cannot be both specified')
+        print('[WARNING] --eval and --format_only should not be both specified!')
+        print('[WARNING] ignored --eval option')
+        assert args.out_dir is not None, 'Please specify out_dir when format results'
 
     cfg = Config.fromfile(args.config)
     if args.cfg_options is not None:
         cfg.merge_from_dict(args.cfg_options)
-    # import modules from string list.
-    if cfg.get('custom_imports', None):
-        from mmcv.utils import import_modules_from_strings
-        import_modules_from_strings(**cfg['custom_imports'])
 
-    # import modules from plguin/xx, registry will be updated
-    if hasattr(cfg, 'plugin'):
-        if cfg.plugin:
-            import importlib
-            if hasattr(cfg, 'plugin_dir'):
-                plugin_dir = cfg.plugin_dir
-                _module_dir = os.path.dirname(plugin_dir)
-                _module_dir = _module_dir.split('/')
-                _module_path = _module_dir[0]
-
-                for m in _module_dir[1:]:
-                    _module_path = _module_path + '.' + m
-                print(_module_path)
-                plg_lib = importlib.import_module(_module_path)
-            else:
-                # import dir is the dirpath for the config file
-                _module_dir = os.path.dirname(args.config)
-                _module_dir = _module_dir.split('/')
-                _module_path = _module_dir[0]
-                for m in _module_dir[1:]:
-                    _module_path = _module_path + '.' + m
-                print(_module_path)
-                plg_lib = importlib.import_module(_module_path)
+    # set multi-process settings
+    setup_multi_processes(cfg)
 
     # set cudnn_benchmark
     if cfg.get('cudnn_benchmark', False):
@@ -189,7 +173,7 @@ def main():
     dataset = build_dataset(cfg.data.test)
 
     if args.input:
-        logger.info(f'Loading results from results.pkl')
+        logger.info(f'Loading model outputs from results.pkl')
         outputs = mmcv.load(os.path.join(args.out_dir, 'results.pkl'))
     else:
         data_loader = build_dataloader(
@@ -233,18 +217,22 @@ def main():
             outputs = multi_gpu_test(model, data_loader, 
                                      tmpdir=os.path.join(args.out_dir, '.dist_test'), 
                                      gpu_collect=args.gpu_collect)
+        print('\n')
 
     rank, _ = get_dist_info()
     if rank == 0:
         if args.out and not args.input:
-            logger.info(f'Writing results to results.pkl')
+            logger.info(f'Writing model outputs to results.pkl')
             mmcv.dump(outputs, os.path.join(args.out_dir, 'results.pkl'))
+
         kwargs = {} if args.eval_options is None else args.eval_options
         kwargs['logger'] = logger
         kwargs['show'] = args.show
-        kwargs['out_dir'] = os.path.join(args.out_dir, 'vis/')
+        kwargs['out_dir'] = args.out_dir
+
         if args.format_only:
             dataset.format_results(outputs, **kwargs)
+            return
 
         if args.eval:
             eval_kwargs = cfg.get('evaluation', {}).copy()
@@ -255,6 +243,7 @@ def main():
             ]:
                 eval_kwargs.pop(key, None)
             eval_kwargs.update(dict(metric=args.eval, **kwargs))
+            eval_kwargs['out_dir'] = os.path.join(args.out_dir, 'vis/')
 
             print(dataset.evaluate(outputs, **eval_kwargs))
 

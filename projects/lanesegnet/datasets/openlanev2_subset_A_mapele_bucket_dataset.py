@@ -7,6 +7,7 @@
 import os
 import random
 import copy
+import tqdm
 
 import numpy as np
 import torch
@@ -90,18 +91,33 @@ class OpenLaneV2_subset_A_MapElementBucket_Dataset(OpenLaneV2_subset_A_LaneSegNe
         for idx in range(len(self.data_infos)):
             info = copy.deepcopy(self.data_infos[idx])
             key = (self.split, info['segment_id'], str(info['timestamp']))
+            areas = []
+            for area in info['annotation']['area']:
+                    points = area['points']
+                    if len(points) != 20:
+                        points = fix_pts_interpolate(points, 20)
+                    area['points'] = points
+                    areas.append(area)
+            info['annotation']['area'] = areas
             gt_dict[key] = info
         return gt_dict
 
-    def format_results(self, results, jsonfile_prefix=None):
+    def format_results(self, results, out_dir=None, logger=None, **kwargs):
+        if out_dir is not None:
+            logger.info(f'Starting format results...')
+            data_type = np.float16
+        else:
+            data_type = np.float32
+
         pred_dict = {}
         pred_dict['method'] = 'LaneSegNet'
+        pred_dict['team'] = 'dummy'
         pred_dict['authors'] = []
         pred_dict['e-mail'] = 'dummy'
         pred_dict['institution / company'] = 'OpenDriveLab'
         pred_dict['country / region'] = 'CN'
         pred_dict['results'] = {}
-        for idx, result in enumerate(results):
+        for idx, result in enumerate(tqdm.tqdm(results, ncols=80, desc='Formatting results')):
             info = self.data_infos[idx]
             key = (self.split, info['segment_id'], str(info['timestamp']))
 
@@ -122,23 +138,22 @@ class OpenLaneV2_subset_A_MapElementBucket_Dataset(OpenLaneV2_subset_A_LaneSegNe
                 scores = scores[valid_indices]
                 lanes = lanes.reshape(-1, lanes.shape[-1] // 3, 3)
 
-                left_type_scores = lane_results[3][valid_indices]
+                # left_type_scores = lane_results[3][valid_indices]
+                # right_type_scores = lane_results[5][valid_indices]
                 left_type_labels = lane_results[4][valid_indices]
-                right_type_scores = lane_results[5][valid_indices]
                 right_type_labels = lane_results[6][valid_indices]
 
                 for pred_idx, (lane, score, label) in enumerate(zip(lanes, scores, labels)):
-                    points = lane.astype(np.float32)
                     pred_lane_segment = {}
                     pred_lane_segment['id'] = 20000 + pred_idx
-                    pred_lane_segment['centerline'] = fix_pts_interpolate(points[:self.points_num], 10)
-                    pred_lane_segment['left_laneline'] = fix_pts_interpolate(points[self.points_num:self.points_num * 2], 10)
-                    pred_lane_segment['right_laneline'] = fix_pts_interpolate(points[self.points_num * 2:], 10)
+                    pred_lane_segment['centerline'] = fix_pts_interpolate(lane[:self.points_num], 10).astype(data_type)
+                    pred_lane_segment['left_laneline'] = fix_pts_interpolate(lane[self.points_num:self.points_num * 2], 10).astype(data_type)
+                    pred_lane_segment['right_laneline'] = fix_pts_interpolate(lane[self.points_num * 2:], 10).astype(data_type)
                     pred_lane_segment['left_laneline_type'] = left_type_labels[pred_idx]
                     pred_lane_segment['right_laneline_type'] = right_type_labels[pred_idx]
                     pred_lane_segment['confidence'] = score.item()
                     pred_info['lane_segment'].append(pred_lane_segment)
-            
+
             if result['area_results'] is not None:
                 area_results = result['area_results']
                 scores = area_results[1]
@@ -147,14 +162,12 @@ class OpenLaneV2_subset_A_MapElementBucket_Dataset(OpenLaneV2_subset_A_LaneSegNe
                 labels = area_results[2][area_valid_indices]
                 scores = scores[area_valid_indices]
                 for pred_idx, (area, score, label) in enumerate(zip(areas, scores, labels)):
-                    points = area.astype(np.float32)
                     pred_area = {}
                     pred_area['id'] = 30000 + pred_idx
-                    pred_area['points'] = fix_pts_interpolate(points, 20)
+                    pred_area['points'] = fix_pts_interpolate(area, 20).astype(data_type)
                     pred_area['category'] = label + 1
                     pred_area['confidence'] = score.item()
                     pred_info['area'].append(pred_area)
-
 
             if result['bbox_results'] is not None:
                 te_results = result['bbox_results']
@@ -168,7 +181,7 @@ class OpenLaneV2_subset_A_MapElementBucket_Dataset(OpenLaneV2_subset_A_LaneSegNe
                         id = 10000 + pred_idx,
                         category = 1 if class_idx < 4 else 2,
                         attribute = class_idx,
-                        points = te.reshape(2, 2).astype(np.float32),
+                        points = te.reshape(2, 2).astype(data_type),
                         confidence = score
                     )
                     pred_info['traffic_element'].append(te_info)
@@ -185,6 +198,10 @@ class OpenLaneV2_subset_A_MapElementBucket_Dataset(OpenLaneV2_subset_A_LaneSegNe
                 pred_info['topology_lste'] = np.zeros((len(pred_info['lane_segment']), len(pred_info['traffic_element'])), dtype=np.float32)
 
             pred_dict['results'][key] = dict(predictions=pred_info)
+
+        if out_dir is not None:
+            logger.info(f'Saving results to {out_dir}...')
+            mmcv.dump(pred_dict, os.path.join(out_dir, 'submission.pkl'))
 
         return pred_dict
 
@@ -209,7 +226,7 @@ class OpenLaneV2_subset_A_MapElementBucket_Dataset(OpenLaneV2_subset_A_LaneSegNe
 
         logger.info(f'Starting format results...')
         gt_dict = self.format_openlanev2_gt()
-        pred_dict = self.format_results(results)
+        pred_dict = self.format_results(results, logger=logger)
 
         logger.info(f'Starting openlanev2 evaluate...')
         metric_results = openlanev2_evaluate(gt_dict, pred_dict)['OpenLane-V2 UniScore']
