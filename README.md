@@ -56,6 +56,8 @@ This repository can be used as a starting point for Mapless Driving track.
 | :--------: | :---: | :---: | :----------------: | :----: | :----: | :------: |
 | LaneSegNet | 24 | 33.5 | 25.4 | 9.4G | [config](projects/configs/lanesegnet_r50_8x1_24e_olv2_subset_A.py) | [ckpt](https://huggingface.co/OpenDriveLab/lanesegnet_r50_8x1_24e_olv2_subset_A/resolve/main/lanesegnet_r50_8x1_24e_olv2_subset_A.pth) / [log](https://huggingface.co/OpenDriveLab/lanesegnet_r50_8x1_24e_olv2_subset_A/resolve/main/20231225_213951.log) |
 
+> The evaluation result is based on OpenLane-V2 devkit `v2.1.0`. In this version, we have addressed a loophole in the TOP metric, which caused the TOP<sub>lsls</sub> value to be significantly higher than what was reported in the paper.  
+> For more details please see issue [#76](https://github.com/OpenDriveLab/OpenLane-V2/issues/76) of OpenLane-V2.
 
 ## Prerequisites
 
