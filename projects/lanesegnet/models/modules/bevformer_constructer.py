@@ -119,8 +119,8 @@ class BEVFormerConstructer(BaseModule):
         bev_pos = self.positional_encoding(bev_mask).to(dtype)
         bev_pos = bev_pos.flatten(2).permute(2, 0, 1)
 
-        # BEVFormer assmupt the coords is x-right and y-forward in nuscenes
-        # but openlane-v2's coords is x-forward and y-left
+        # BEVFormer assumes the coords are x-right and y-forward for the nuScenes lidar
+        # but OpenLane-V2's coords are x-forward and y-left
         # here is a fix for any lidar coords, the shift is calculated by the rotation matrix
         delta_global = np.array([each['can_bus'][:3] for each in img_metas])
         lidar2global_rotation = np.array([each['lidar2global_rotation'] for each in img_metas])
