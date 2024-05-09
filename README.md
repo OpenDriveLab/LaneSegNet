@@ -52,12 +52,25 @@ This repository can be used as a starting point for Mapless Driving track.
 
 ## Model Zoo
 
+> The evaluation results below are based on OpenLane-V2 devkit `v2.1.0`. In this version, we have addressed a loophole in the TOP metric, which caused the TOP<sub>lsls</sub> value to be significantly higher than what was reported in the paper.  
+> For more details please see issue [#76](https://github.com/OpenDriveLab/OpenLane-V2/issues/76) of OpenLane-V2.
+
+### Performance in LaneSegNet paper
+
 |   Model    | Epoch |  mAP  | TOP<sub>lsls</sub> | Memory | Config | Download |
 | :--------: | :---: | :---: | :----------------: | :----: | :----: | :------: |
 | LaneSegNet | 24 | 33.5 | 25.4 | 9.4G | [config](projects/configs/lanesegnet_r50_8x1_24e_olv2_subset_A.py) | [ckpt](https://huggingface.co/OpenDriveLab/lanesegnet_r50_8x1_24e_olv2_subset_A/resolve/main/lanesegnet_r50_8x1_24e_olv2_subset_A.pth) / [log](https://huggingface.co/OpenDriveLab/lanesegnet_r50_8x1_24e_olv2_subset_A/resolve/main/20231225_213951.log) |
 
-> The evaluation result is based on OpenLane-V2 devkit `v2.1.0`. In this version, we have addressed a loophole in the TOP metric, which caused the TOP<sub>lsls</sub> value to be significantly higher than what was reported in the paper.  
-> For more details please see issue [#76](https://github.com/OpenDriveLab/OpenLane-V2/issues/76) of OpenLane-V2.
+> The mean AP is between lane segment and pedestrian crossing.
+
+### Performance on OpenLane-V2 Map Element Bucket
+
+| Model | Epoch | DET<sub>ls</sub> | DET<sub>a</sub> | DET<sub>t</sub> | TOP<sub>lsls</sub> | TOP<sub>lste</sub> | Config |
+| :---: | :---: | :---: | :---: | :---: | :---: | :---: | :---: |
+| LaneSegNet-meb | 24 | 27.8 | 23.8 | 36.9 | 24.1 | 21.3 | [config](projects/configs/lanesegnet_r50_8x1_24e_olv2_subset_A_mapele_bucket.py) |
+
+> This is a naive multi-branch model for the Map Element Bucket.  
+> The pedestrian and road boundary are detected by an additional MapTR head. The traffic element are detected by a Deformable DETR head. The hyper-parameters are roughly set.
 
 ## Prerequisites
 
