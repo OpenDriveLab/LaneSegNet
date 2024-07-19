@@ -52,6 +52,7 @@ This repository can be used as a starting point for Mapless Driving track.
 
 ## Model Zoo
 
+> [!NOTE]
 > The evaluation results below are based on OpenLane-V2 devkit `v2.1.0`. In this version, we have addressed a loophole in the TOP metric, which caused the TOP<sub>lsls</sub> value to be significantly higher than what was reported in the paper.  
 > For more details please see issue [#76](https://github.com/OpenDriveLab/OpenLane-V2/issues/76) of OpenLane-V2.
 
@@ -109,9 +110,11 @@ pip install -r requirements.txt
 
 Following [OpenLane-V2 repo](https://github.com/OpenDriveLab/OpenLane-V2/blob/v2.1.0/data) to download the **Image** and the **Map Element Bucket** data. Run the following script to collect data for this repo. 
 
-:exclamation: Please note that the script for generating LaneSegNet data is not the same as the OpenLane-V2 Map Element Bucket. The `*_lanesegnet.pkl` is not the same as the `*_ls.pkl`
-
-:bell: The `Map Element Bucket` has been updated as of October 2023. Please ensure you download the most recent data!
+> [!IMPORTANT]
+> 
+> :exclamation: Please note that the script for generating LaneSegNet data is not the same as the OpenLane-V2 Map Element Bucket. The `*_lanesegnet.pkl` is not the same as the `*_ls.pkl`.
+> 
+> :bell: The `Map Element Bucket` has been updated as of October 2023. Please ensure you download the most recent data.
 
 ```bash
 cd LaneSegNet
