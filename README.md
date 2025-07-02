@@ -1,3 +1,6 @@
+> [!IMPORTANT]
+> 🌟 Stay up to date at [opendrivelab.com](https://opendrivelab.com/#news)!
+
 <div align="center">
 
 # LaneSegNet: Map Learning with Lane Segment Perception for Autonomous Driving
